@@ -5,6 +5,7 @@ public class StackManager2D : MonoBehaviour
     [Header("Referências")]
     [SerializeField] private GameObject blockPrefab2D;
     [SerializeField] private ScoreManager2D scoreManager;
+    [SerializeField] private CameraController2D cameraController;
 
     [Header("Configurações")]
     [SerializeField] private float tolerance = 0.1f; // Margem para acerto perfeito
@@ -116,7 +117,14 @@ public class StackManager2D : MonoBehaviour
     private void NextTurn()
     {
         lastBlock = currentBlock;
-        startFromLeft = !startFromLeft; // Alterna a direção da próxima rodada
+
+        // Notifica a câmera para acompanhar a nova altura da torre
+        if (cameraController != null)
+        {
+            cameraController.SetTarget(lastBlock.transform);
+        }
+
+        startFromLeft = !startFromLeft;
         SpawnNewBlock();
     }
 
