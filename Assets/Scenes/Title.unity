@@ -1486,7 +1486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e3922a4d5179d4499c1a93396072313, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CreditsManager
-  targetSceneName: 
+  targetSceneName: Title
   creditsDuration: 15
   creditsPanel: {fileID: 1230793582}
   creditsScroller: {fileID: 1913260320}
@@ -1557,7 +1557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ac42f6aa02093045bae6e16124022b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CreditsScroller
-  scrollSpeed: 50
+  scrollSpeed: 255
   startYPosition: -1000
   textRectTransform: {fileID: 1913260319}
 --- !u!114 &1913260321
