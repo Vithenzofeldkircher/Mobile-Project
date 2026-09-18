@@ -8,6 +8,11 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
+    public void LoadMenu()
+    {
+        SceneManager.LoadScene("Title");
+    }
+
     //essa função deve sair do jogo
     public void QuitGame()
     {

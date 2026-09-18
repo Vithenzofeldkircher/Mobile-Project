@@ -6,6 +6,7 @@ public class StackManager2D : MonoBehaviour
     [SerializeField] private GameObject blockPrefab2D;
     [SerializeField] private ScoreManager2D scoreManager;
     [SerializeField] private CameraController2D cameraController;
+    [SerializeField] private GameObject panelRestart;
 
     [Header("Configurações")]
     [SerializeField] private float tolerance = 0.1f; // Margem para acerto perfeito
@@ -133,6 +134,9 @@ public class StackManager2D : MonoBehaviour
         // Faz o bloco atual cair se errar feio
         if (currentBlock.GetComponent<Rigidbody2D>() == null)
             currentBlock.AddComponent<Rigidbody2D>();
+        
+        if (panelRestart != null)
+            panelRestart.SetActive(true);
 
         Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }
