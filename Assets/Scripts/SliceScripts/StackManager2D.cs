@@ -7,9 +7,11 @@ public class StackManager2D : MonoBehaviour
     [SerializeField] private ScoreManager2D scoreManager;
     [SerializeField] private CameraController2D cameraController;
     [SerializeField] private GameObject panelRestart;
+    [SerializeField] private int BlocVelocity;
 
     [Header("Configurações")]
     [SerializeField] private float tolerance = 0.1f; // Margem para acerto perfeito
+
 
     private GameObject currentBlock;
     private GameObject lastBlock;
@@ -137,7 +139,7 @@ public class StackManager2D : MonoBehaviour
         
         if (panelRestart != null)
             panelRestart.SetActive(true);
-
-        Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
+         
+       
     }
 }
