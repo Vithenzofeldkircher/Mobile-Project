@@ -1422,8 +1422,11 @@ MonoBehaviour:
   scoreManager: {fileID: 1993171073}
   cameraController: {fileID: 393757227}
   panelRestart: {fileID: 393071879}
-  BlocVelocity: 0
   tolerance: 0.1
+  BlocVelocity: 0
+  velocidadeInicial: 2
+  aumentoDeVelocidade: 1
+  pontosParaAumentarVelocidade: 5
 --- !u!114 &1993171073
 MonoBehaviour:
   m_ObjectHideFlags: 0
