@@ -571,8 +571,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b17a778801b8b3419a353c40cc21d70, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController2D
+  target: {fileID: 0}
   smoothSpeed: 4
-  offsetY: 2
+  yOffset: 2
+  zoomSpeed: 4
+  maxZoomOut: 25
+  alturaParaIniciarZoom: 5
 --- !u!1 &397364524
 GameObject:
   m_ObjectHideFlags: 0
@@ -1423,10 +1427,7 @@ MonoBehaviour:
   cameraController: {fileID: 393757227}
   panelRestart: {fileID: 393071879}
   tolerance: 0.1
-  BlocVelocity: 0
-  velocidadeInicial: 2
-  aumentoDeVelocidade: 1
-  pontosParaAumentarVelocidade: 5
+  comboParaRestaurar: 5
 --- !u!114 &1993171073
 MonoBehaviour:
   m_ObjectHideFlags: 0
