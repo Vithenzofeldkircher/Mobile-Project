@@ -230,6 +230,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 136961875}
+  - component: {fileID: 136961876}
   m_Layer: 0
   m_Name: MenuManager
   m_TagString: Untagged
@@ -252,6 +253,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &136961876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 136961873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ecd3907c459e244b974b8d7c1ea44e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
 --- !u!1 &315862943
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,9 +928,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 136961873}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: LoadMenu
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1093,9 +1106,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 136961876}
         m_TargetAssemblyTypeName: MainMenuController, Assembly-CSharp
-        m_MethodName: StartGame
+        m_MethodName: Restart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1465,10 +1478,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e4475609cde214e97dfe35b43b3863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StackManager2D
-  blockPrefab2D: {fileID: 1441652025746388113, guid: 4642c7965d68b3946bfdce35e71bd3b0, type: 3}
   scoreManager: {fileID: 827901328}
+  restartPanel: {fileID: 393071879}
   cameraController: {fileID: 393757227}
+  blockPrefab2D: {fileID: 1441652025746388113, guid: 4642c7965d68b3946bfdce35e71bd3b0, type: 3}
   tolerance: 0.1
+  perfectComboTarget: 5
 --- !u!114 &1993171076
 MonoBehaviour:
   m_ObjectHideFlags: 0

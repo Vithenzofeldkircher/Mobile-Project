@@ -109,4 +109,4 @@ MonoBehaviour:
     - '#33FF57'
     - '#3357FF'
     - '#F333FF'
-    transitionSpeed: 0.005
+    transitionSpeed: 0.05

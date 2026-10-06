@@ -2,29 +2,41 @@ using UnityEngine;
 
 public class StackManager2D : MonoBehaviour
 {
-    [Header("Referências")]
-    [SerializeField] private GameObject blockPrefab2D;
+    [Header("Referências da UI")]
     [SerializeField] private ScoreManager2D scoreManager;
+    [SerializeField] public GameObject restartPanel;
     [SerializeField] private CameraController2D cameraController;
 
-    [Header("Configurações")]
-    [SerializeField] private float tolerance = 0.1f; // Margem para acerto perfeito
+    [Header("Configurações do Jogo")]
+    [SerializeField] private GameObject blockPrefab2D;
+    [SerializeField] private float tolerance = 0.1f;
+
+    [Header("Mecânica de Combo (Tamanho Inicial / Restauração)")]
+    [Tooltip("Número de acertos perfeitos consecutivos necessários para restaurar a escala original do bloco")]
+    [SerializeField] private int perfectComboTarget = 5;
 
     private GameObject currentBlock;
     private GameObject lastBlock;
+    private bool startFromLeft = true;
 
-    private bool startFromLeft = true; // Alterna a origem do bloco a cada rodada
+    // Variável interna para contar a sequência de acertos perfeitos
+    private int consecutivePerfectHits = 0;
+
+    // Armazena a escala X original do Prefab para saber o tamanho máximo/padrão
+    private float originalBlockWidth;
 
     void Start()
     {
-        // Instancia a primeira base estática (Geralmente no centro inferior da tela)
+        // Salva a largura original declarada no Prefab
+        originalBlockWidth = blockPrefab2D.transform.localScale.x;
+
+        // Instancia a base inicial
         lastBlock = Instantiate(blockPrefab2D, Vector3.zero, Quaternion.identity);
         SpawnNewBlock();
     }
 
     void Update()
     {
-        // Input do jogador (Toque na tela ou clique do mouse)
         if (Input.GetMouseButtonDown(0))
         {
             PlaceBlock();
@@ -33,15 +45,13 @@ public class StackManager2D : MonoBehaviour
 
     private void SpawnNewBlock()
     {
-        // A torre cresce no eixo Y somando a altura do bloco anterior
         float newYPosition = lastBlock.transform.position.y + lastBlock.transform.localScale.y;
 
         currentBlock = Instantiate(blockPrefab2D, new Vector3(0, newYPosition, 0), Quaternion.identity);
 
-        // O novo bloco herda EXATAMENTE o tamanho (escala) que a base atual tem
+        // O bloco herda a escala X atual da última base
         currentBlock.transform.localScale = lastBlock.transform.localScale;
 
-        // Adiciona e inicia o script de movimento
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
         mover.Initialize(startFromLeft);
     }
@@ -51,65 +61,84 @@ public class StackManager2D : MonoBehaviour
         BlockMovement2D mover = currentBlock.GetComponent<BlockMovement2D>();
         if (mover != null) mover.StopMoving();
 
-        // Distância entre o centro do bloco atual e a base
         float hangover = currentBlock.transform.position.x - lastBlock.transform.position.x;
         float absHangover = Mathf.Abs(hangover);
 
-        // CHECAGEM DE ACERTO PERFEITO
+
         if (absHangover <= tolerance)
         {
+            // Centraliza o bloco perfeitamente sobre a base
             Vector3 perfectPos = currentBlock.transform.position;
-            perfectPos.x = lastBlock.transform.position.x; // Centraliza milimetricamente
+            perfectPos.x = lastBlock.transform.position.x;
             currentBlock.transform.position = perfectPos;
+
+            // Incrementa o combo de acertos perfeitos
+            consecutivePerfectHits++;
+
+            // Avalia se atingiu a meta de combo para restaurar o tamanho do bloco
+            CheckAndApplyComboBonus();
 
             scoreManager.AddPoint();
             NextTurn();
             return;
         }
 
-        // CÁLCULO DE CORTE (Redução de base)
+
+        consecutivePerfectHits = 0;
+
         float currentWidth = lastBlock.transform.localScale.x;
         float newWidth = currentWidth - absHangover;
 
-        // Se o bloco ficou totalmente para fora da base, Game Over
+        // Game Over caso o bloco fique totalmente fora da base
         if (newWidth <= 0)
         {
             GameOver();
             return;
         }
 
-        // AJUSTE DA NOVA BASE
-        float direction = hangover > 0 ? 1f : -1f; // Define se a sobra ficou na direita ou esquerda
+        // Ajusta a nova escala e posição do bloco cortado
+        float direction = hangover > 0 ? 1f : -1f;
         float newXPosition = lastBlock.transform.position.x + (hangover / 2f);
 
         currentBlock.transform.localScale = new Vector2(newWidth, currentBlock.transform.localScale.y);
         currentBlock.transform.position = new Vector3(newXPosition, currentBlock.transform.position.y, 0);
 
-        // Cria e solta a sobra do bloco que foi cortada
         CreateFallingPiece(newWidth, currentWidth, direction);
 
         scoreManager.AddPoint();
         NextTurn();
     }
 
+
+    private void CheckAndApplyComboBonus()
+    {
+        if (consecutivePerfectHits >= perfectComboTarget)
+        {
+            // Restaura a escala X para a largura original do Prefab
+            Vector3 restoredScale = currentBlock.transform.localScale;
+            restoredScale.x = originalBlockWidth;
+            currentBlock.transform.localScale = restoredScale;
+
+            Debug.Log($"<color=green>COMBO PERFEITO ALCANÇADO ({consecutivePerfectHits})!</color> Escala do bloco restaurada para {originalBlockWidth}.");
+
+            // Opcional: Reinicia a contagem do combo para o jogador precisar fazer o combo novamente
+            consecutivePerfectHits = 0;
+        }
+    }
+
     private void CreateFallingPiece(float newWidth, float oldWidth, float direction)
     {
-        // Cria um clone do bloco para ser a sobra
         GameObject fallingPiece = Instantiate(blockPrefab2D);
-
-        // Remove qualquer script de movimento residual
         Destroy(fallingPiece.GetComponent<BlockMovement2D>());
 
         float fallingWidth = oldWidth - newWidth;
         fallingPiece.transform.localScale = new Vector2(fallingWidth, currentBlock.transform.localScale.y);
 
-        // Posiciona a sobra exatamente ao lado da parte que ficou retida na torre
         float edge = currentBlock.transform.position.x + (newWidth / 2f * direction);
         float fallingXPos = edge + (fallingWidth / 2f * direction);
 
         fallingPiece.transform.position = new Vector3(fallingXPos, currentBlock.transform.position.y, 0);
 
-        // Adiciona física 2D para ele cair e destrói após 3 segundos
         fallingPiece.AddComponent<Rigidbody2D>();
         Destroy(fallingPiece, 3f);
     }
@@ -130,9 +159,14 @@ public class StackManager2D : MonoBehaviour
 
     private void GameOver()
     {
-        // Faz o bloco atual cair se errar feio
+        BlockMovement2D mover = currentBlock.GetComponent<BlockMovement2D>();
+        if (mover != null) mover.StopMoving();
+
         if (currentBlock.GetComponent<Rigidbody2D>() == null)
             currentBlock.AddComponent<Rigidbody2D>();
+
+        if (restartPanel != null)
+            restartPanel.SetActive(true);
 
         Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }

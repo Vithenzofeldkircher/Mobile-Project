@@ -8,10 +8,20 @@ public class MainMenuController : MonoBehaviour
         SceneManager.LoadScene("Game");
     }
 
+    public void LoadMenu()
+    {
+        SceneManager.LoadScene("Title");
+    }
+
     //Essa função serve para sair do jogo, apenas quando necessario.
     public void ExitGame()
     {
         Application.Quit();
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
 }
