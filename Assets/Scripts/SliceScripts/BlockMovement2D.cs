@@ -2,37 +2,18 @@ using UnityEngine;
 
 public class BlockMovement2D : MonoBehaviour
 {
-    [Header("Configurações de Movimento")]
-    [SerializeField] private float boundX = 3f;
+    public float moveSpeed = 4f;
+    public float boundX = 3f; // Limite da tela onde ele inverte a direção
 
-    [Header("Dificuldade")]
-    [SerializeField] private float velocidadeInicial = 3f;
-    [SerializeField] private float incrementoVelocidade = 0.5f;
-    [SerializeField] private int pontosParaAumentar = 5;
-
-    private float moveSpeed;
     private bool isMoving = true;
     private int direction = 1;
 
-    public void Initialize(bool startFromLeft, int currentScore)
+    public void Initialize(bool startFromLeft)
     {
+        // Define se nasce na esquerda (-1) ou direita (1)
         direction = startFromLeft ? 1 : -1;
         float startX = startFromLeft ? -boundX : boundX;
         transform.position = new Vector3(startX, transform.position.y, 0);
-
-        // Calcula a velocidade com base na pontuação (Responsabilidade do próprio bloco)
-        CalcularVelocidade(currentScore);
-    }
-
-    private void CalcularVelocidade(int score)
-    {
-        moveSpeed = velocidadeInicial;
-
-        // Laço de repetição para somar a velocidade a cada marco de pontos atingido
-        for (int i = pontosParaAumentar; i <= score; i += pontosParaAumentar)
-        {
-            moveSpeed += incrementoVelocidade;
-        }
     }
 
     public void StopMoving()
@@ -44,8 +25,10 @@ public class BlockMovement2D : MonoBehaviour
     {
         if (!isMoving) return;
 
+        // Move o bloco no eixo X
         transform.Translate(Vector3.right * direction * moveSpeed * Time.deltaTime);
 
+        // Bateu no limite da tela, inverte a direção
         if (transform.position.x >= boundX) direction = -1;
         else if (transform.position.x <= -boundX) direction = 1;
     }

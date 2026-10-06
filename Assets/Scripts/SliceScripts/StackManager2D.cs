@@ -5,31 +5,25 @@ public class StackManager2D : MonoBehaviour
     [Header("Referências")]
     [SerializeField] private GameObject blockPrefab2D;
     [SerializeField] private ScoreManager2D scoreManager;
-    [SerializeField] private CameraController2D cameraController;
-    [SerializeField] private GameObject panelRestart;
 
-    [Header("Configurações de Regra")]
-    [SerializeField] private float tolerance = 0.1f;
-    [SerializeField] private int comboParaRestaurar = 5;
+    [Header("Configurações")]
+    [SerializeField] private float tolerance = 0.1f; // Margem para acerto perfeito
 
     private GameObject currentBlock;
     private GameObject lastBlock;
-    private bool startFromLeft = true;
 
-    private float originalBlockWidth;
-    private int perfectComboCount = 0;
+    private bool startFromLeft = true; // Alterna a origem do bloco a cada rodada
 
     void Start()
     {
-        // Salva o tamanho original do prefab
-        originalBlockWidth = blockPrefab2D.transform.localScale.x;
-
+        // Instancia a primeira base estática (Geralmente no centro inferior da tela)
         lastBlock = Instantiate(blockPrefab2D, Vector3.zero, Quaternion.identity);
         SpawnNewBlock();
     }
 
     void Update()
     {
+        // Input do jogador (Toque na tela ou clique do mouse)
         if (Input.GetMouseButtonDown(0))
         {
             PlaceBlock();
@@ -38,13 +32,17 @@ public class StackManager2D : MonoBehaviour
 
     private void SpawnNewBlock()
     {
+        // A torre cresce no eixo Y somando a altura do bloco anterior
         float newYPosition = lastBlock.transform.position.y + lastBlock.transform.localScale.y;
+
         currentBlock = Instantiate(blockPrefab2D, new Vector3(0, newYPosition, 0), Quaternion.identity);
+
+        // O novo bloco herda EXATAMENTE o tamanho (escala) que a base atual tem
         currentBlock.transform.localScale = lastBlock.transform.localScale;
 
-        // O BlockMovement2D agora recebe o score e calcula a própria velocidade internamente (SOLID)
+        // Adiciona e inicia o script de movimento
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
-        mover.Initialize(startFromLeft, scoreManager.GetScore());
+        mover.Initialize(startFromLeft);
     }
 
     private void PlaceBlock()
@@ -52,54 +50,41 @@ public class StackManager2D : MonoBehaviour
         BlockMovement2D mover = currentBlock.GetComponent<BlockMovement2D>();
         if (mover != null) mover.StopMoving();
 
+        // Distância entre o centro do bloco atual e a base
         float hangover = currentBlock.transform.position.x - lastBlock.transform.position.x;
         float absHangover = Mathf.Abs(hangover);
 
         // CHECAGEM DE ACERTO PERFEITO
         if (absHangover <= tolerance)
         {
-            perfectComboCount++;
-
-            // Centraliza o bloco perfeitamente
             Vector3 perfectPos = currentBlock.transform.position;
-            perfectPos.x = lastBlock.transform.position.x;
+            perfectPos.x = lastBlock.transform.position.x; // Centraliza milimetricamente
             currentBlock.transform.position = perfectPos;
-
-            // RECOMPENSA: Se atingiu 5 ou mais acertos perfeitos seguidos, restaura o tamanho original
-            if (perfectComboCount >= comboParaRestaurar)
-            {
-                currentBlock.transform.localScale = new Vector2(originalBlockWidth, currentBlock.transform.localScale.y);
-                perfectComboCount = 0; // Reseta o contador
-
-                scoreManager.AddPoint();
-                NextTurn();
-                return; // Encerra a função
-            }
 
             scoreManager.AddPoint();
             NextTurn();
             return;
         }
 
-        // Se errou o ponto perfeito, reseta a contagem de combo
-        perfectComboCount = 0;
-
-        // CÁLCULO DE CORTE
+        // CÁLCULO DE CORTE (Redução de base)
         float currentWidth = lastBlock.transform.localScale.x;
         float newWidth = currentWidth - absHangover;
 
+        // Se o bloco ficou totalmente para fora da base, Game Over
         if (newWidth <= 0)
         {
             GameOver();
             return;
         }
 
-        float direction = hangover > 0 ? 1f : -1f;
+        // AJUSTE DA NOVA BASE
+        float direction = hangover > 0 ? 1f : -1f; // Define se a sobra ficou na direita ou esquerda
         float newXPosition = lastBlock.transform.position.x + (hangover / 2f);
 
         currentBlock.transform.localScale = new Vector2(newWidth, currentBlock.transform.localScale.y);
         currentBlock.transform.position = new Vector3(newXPosition, currentBlock.transform.position.y, 0);
 
+        // Cria e solta a sobra do bloco que foi cortada
         CreateFallingPiece(newWidth, currentWidth, direction);
 
         scoreManager.AddPoint();
@@ -108,17 +93,22 @@ public class StackManager2D : MonoBehaviour
 
     private void CreateFallingPiece(float newWidth, float oldWidth, float direction)
     {
+        // Cria um clone do bloco para ser a sobra
         GameObject fallingPiece = Instantiate(blockPrefab2D);
+
+        // Remove qualquer script de movimento residual
         Destroy(fallingPiece.GetComponent<BlockMovement2D>());
 
         float fallingWidth = oldWidth - newWidth;
         fallingPiece.transform.localScale = new Vector2(fallingWidth, currentBlock.transform.localScale.y);
 
+        // Posiciona a sobra exatamente ao lado da parte que ficou retida na torre
         float edge = currentBlock.transform.position.x + (newWidth / 2f * direction);
         float fallingXPos = edge + (fallingWidth / 2f * direction);
 
         fallingPiece.transform.position = new Vector3(fallingXPos, currentBlock.transform.position.y, 0);
 
+        // Adiciona física 2D para ele cair e destrói após 3 segundos
         fallingPiece.AddComponent<Rigidbody2D>();
         Destroy(fallingPiece, 3f);
     }
@@ -126,22 +116,16 @@ public class StackManager2D : MonoBehaviour
     private void NextTurn()
     {
         lastBlock = currentBlock;
-
-        if (cameraController != null)
-        {
-            cameraController.SetTarget(lastBlock.transform);
-        }
-
-        startFromLeft = !startFromLeft;
+        startFromLeft = !startFromLeft; // Alterna a direção da próxima rodada
         SpawnNewBlock();
     }
 
     private void GameOver()
     {
+        // Faz o bloco atual cair se errar feio
         if (currentBlock.GetComponent<Rigidbody2D>() == null)
             currentBlock.AddComponent<Rigidbody2D>();
 
-        if (panelRestart != null)
-            panelRestart.SetActive(true);
+        Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }
 }
