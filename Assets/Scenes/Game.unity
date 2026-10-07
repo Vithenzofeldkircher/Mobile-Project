@@ -403,8 +403,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 8845760464078331731, guid: 789717750b47e5844bddfb78d2d0f483, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -720,6 +720,8 @@ GameObject:
   - component: {fileID: 616097032}
   - component: {fileID: 616097034}
   - component: {fileID: 616097033}
+  - component: {fileID: 616097035}
+  - component: {fileID: 616097036}
   m_Layer: 5
   m_Name: ScoreText
   m_TagString: Untagged
@@ -845,6 +847,41 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616097031}
   m_CullTransparentMesh: 1
+--- !u!114 &616097035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616097031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af8f32f7f5315ec48a786edbe763ecc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIJuiceBobbing
+  animarPosicao: 1
+  amplitudePosicao: 8
+  velocidadePosicao: 2
+  animarRotacao: 1
+  amplitudeRotacao: 2
+  velocidadeRotacao: 1.5
+  animarEscala: 0
+  amplitudeEscala: 0.03
+  velocidadeEscala: 1.8
+--- !u!114 &616097036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 616097031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73d073a474a75454684cd19776a85da4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreTextUI
+  ScoreTranforme: {fileID: 616097032}
+  ScoreChangeScale: 5
 --- !u!1 &649326510
 GameObject:
   m_ObjectHideFlags: 0
@@ -1415,8 +1452,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 8845760464078331731, guid: 789717750b47e5844bddfb78d2d0f483, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1497,7 +1534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BlockMovement2D
   moveSpeed: 4
-  boundX: 3
+  boundX: 2
 --- !u!1 &2059811166
 GameObject:
   m_ObjectHideFlags: 0
