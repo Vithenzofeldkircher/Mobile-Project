@@ -7,6 +7,9 @@ public class StackManager2D : MonoBehaviour
     [SerializeField] public GameObject restartPanel;
     [SerializeField] private CameraController2D cameraController;
 
+    [Header("Efeitos Visuais (SOLID)")]
+    [SerializeReference] private ITowerEffectService effectService = new ParticleEffectService();
+
     [Header("Configurações do Jogo")]
     [SerializeField] private GameObject blockPrefab2D;
     [SerializeField] private float tolerance = 0.1f;
@@ -19,18 +22,13 @@ public class StackManager2D : MonoBehaviour
     private GameObject lastBlock;
     private bool startFromLeft = true;
 
-    // Variável interna para contar a sequência de acertos perfeitos
     private int consecutivePerfectHits = 0;
-
-    // Armazena a escala X original do Prefab para saber o tamanho máximo/padrão
     private float originalBlockWidth;
 
     void Start()
     {
-        // Salva a largura original declarada no Prefab
         originalBlockWidth = blockPrefab2D.transform.localScale.x;
 
-        // Instancia a base inicial
         lastBlock = Instantiate(blockPrefab2D, Vector3.zero, Quaternion.identity);
         SpawnNewBlock();
     }
@@ -48,8 +46,6 @@ public class StackManager2D : MonoBehaviour
         float newYPosition = lastBlock.transform.position.y + lastBlock.transform.localScale.y;
 
         currentBlock = Instantiate(blockPrefab2D, new Vector3(0, newYPosition, 0), Quaternion.identity);
-
-        // O bloco herda a escala X atual da última base
         currentBlock.transform.localScale = lastBlock.transform.localScale;
 
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
@@ -64,39 +60,34 @@ public class StackManager2D : MonoBehaviour
         float hangover = currentBlock.transform.position.x - lastBlock.transform.position.x;
         float absHangover = Mathf.Abs(hangover);
 
-
         if (absHangover <= tolerance)
         {
-            // Centraliza o bloco perfeitamente sobre a base
             Vector3 perfectPos = currentBlock.transform.position;
             perfectPos.x = lastBlock.transform.position.x;
             currentBlock.transform.position = perfectPos;
 
-            // Incrementa o combo de acertos perfeitos
             consecutivePerfectHits++;
-
-            // Avalia se atingiu a meta de combo para restaurar o tamanho do bloco
             CheckAndApplyComboBonus();
+
+            // Toca o efeito de partículas na posição do acerto perfeito
+            effectService?.PlayPlacementEffect(currentBlock.transform.position);
 
             scoreManager.AddPoint();
             NextTurn();
             return;
         }
 
-
         consecutivePerfectHits = 0;
 
         float currentWidth = lastBlock.transform.localScale.x;
         float newWidth = currentWidth - absHangover;
 
-        // Game Over caso o bloco fique totalmente fora da base
         if (newWidth <= 0)
         {
             GameOver();
             return;
         }
 
-        // Ajusta a nova escala e posição do bloco cortado
         float direction = hangover > 0 ? 1f : -1f;
         float newXPosition = lastBlock.transform.position.x + (hangover / 2f);
 
@@ -105,23 +96,23 @@ public class StackManager2D : MonoBehaviour
 
         CreateFallingPiece(newWidth, currentWidth, direction);
 
+        // Toca o efeito de partículas na posição do bloco encaixado
+        effectService?.PlayPlacementEffect(currentBlock.transform.position);
+
         scoreManager.AddPoint();
         NextTurn();
     }
-
 
     private void CheckAndApplyComboBonus()
     {
         if (consecutivePerfectHits >= perfectComboTarget)
         {
-            // Restaura a escala X para a largura original do Prefab
             Vector3 restoredScale = currentBlock.transform.localScale;
             restoredScale.x = originalBlockWidth;
             currentBlock.transform.localScale = restoredScale;
 
             Debug.Log($"<color=green>COMBO PERFEITO ALCANÇADO ({consecutivePerfectHits})!</color> Escala do bloco restaurada para {originalBlockWidth}.");
 
-            // Opcional: Reinicia a contagem do combo para o jogador precisar fazer o combo novamente
             consecutivePerfectHits = 0;
         }
     }
@@ -147,7 +138,6 @@ public class StackManager2D : MonoBehaviour
     {
         lastBlock = currentBlock;
 
-        // Notifica a câmera para acompanhar a nova altura da torre
         if (cameraController != null)
         {
             cameraController.SetTarget(lastBlock.transform);
@@ -168,7 +158,6 @@ public class StackManager2D : MonoBehaviour
         if (restartPanel != null)
             restartPanel.SetActive(true);
 
-        // Afasta a câmera para exibir a torre completa
         if (cameraController != null && lastBlock != null)
         {
             float finalTowerHeight = lastBlock.transform.position.y;
@@ -177,5 +166,4 @@ public class StackManager2D : MonoBehaviour
 
         Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }
-    
 }
