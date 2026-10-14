@@ -168,6 +168,14 @@ public class StackManager2D : MonoBehaviour
         if (restartPanel != null)
             restartPanel.SetActive(true);
 
+        // Afasta a câmera para exibir a torre completa
+        if (cameraController != null && lastBlock != null)
+        {
+            float finalTowerHeight = lastBlock.transform.position.y;
+            cameraController.ZoomOutToOverview(finalTowerHeight);
+        }
+
         Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }
+    
 }
