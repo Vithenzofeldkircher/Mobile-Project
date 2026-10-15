@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 
 public class CreditsManager : MonoBehaviour
 {
@@ -11,7 +10,14 @@ public class CreditsManager : MonoBehaviour
 
     private void Update()
     {
-
+        // Se os créditos estiverem ativos e o jogador clicar com o mouse ou tocar na tela
+        if (isCreditsActive)
+        {
+            if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
+            {
+                CloseCredits();
+            }
+        }
     }
 
     // Chamado pelo botão do Menu Principal para abrir os créditos
@@ -19,7 +25,6 @@ public class CreditsManager : MonoBehaviour
     {
         isCreditsActive = true;
         creditsPanel.SetActive(true);
-
         creditsScroller.BeginScroll();
     }
 
