@@ -107,6 +107,6 @@ MonoBehaviour:
     hexColors:
     - '#FF5733'
     - '#33FF57'
-    - '#3357FF'
+    - '#65FF32'
     - '#F333FF'
     transitionSpeed: 0.05

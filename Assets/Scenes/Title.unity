@@ -1321,8 +1321,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CreditsManager
   creditsPanel: {fileID: 733800096}
   creditsScroller: {fileID: 953488154}
-  skipPromptText: {fileID: 0}
-  promptDisplayTime: 1
 --- !u!4 &953488156
 Transform:
   m_ObjectHideFlags: 0
