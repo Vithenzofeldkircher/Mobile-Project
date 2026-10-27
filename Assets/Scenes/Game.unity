@@ -630,9 +630,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController2D
   smoothSpeed: 4
-  offsetY: 2
-  baseOrthographicSize: 5
-  maxOrthographicSize: 25
+  offsetY: 4
+  baseOrthographicSize: 7
+  maxOrthographicSize: 40
 --- !u!1 &397364524
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,7 +690,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Jogar
+  m_text: "Recome\xE7ar"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -717,8 +717,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -805,8 +805,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -364}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: -264, y: -51}
+  m_SizeDelta: {x: 100, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &616097033
 MonoBehaviour:
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: AAAAAAAA
+  m_text: A
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -855,8 +855,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -998,7 +998,6 @@ GameObject:
   - component: {fileID: 649326514}
   - component: {fileID: 649326513}
   - component: {fileID: 649326512}
-  - component: {fileID: 649326515}
   m_Layer: 5
   m_Name: Button (1)
   m_TagString: Untagged
@@ -1120,27 +1119,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649326510}
   m_CullTransparentMesh: 1
---- !u!114 &649326515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 649326510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af8f32f7f5315ec48a786edbe763ecc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIJuiceBobbing
-  animarPosicao: 1
-  amplitudePosicao: 8
-  velocidadePosicao: 2
-  animarRotacao: 1
-  amplitudeRotacao: 2
-  velocidadeRotacao: 1.5
-  animarEscala: 0
-  amplitudeEscala: 0.03
-  velocidadeEscala: 1.8
 --- !u!1 &827901327
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,6 +1149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreManager2D
   scoreText: {fileID: 616097033}
+  bestScoreText: {fileID: 0}
 --- !u!4 &827901329
 Transform:
   m_ObjectHideFlags: 0
@@ -1198,7 +1177,6 @@ GameObject:
   - component: {fileID: 1032084452}
   - component: {fileID: 1032084451}
   - component: {fileID: 1032084450}
-  - component: {fileID: 1032084453}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -1320,27 +1298,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032084448}
   m_CullTransparentMesh: 1
---- !u!114 &1032084453
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1032084448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af8f32f7f5315ec48a786edbe763ecc6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIJuiceBobbing
-  animarPosicao: 1
-  amplitudePosicao: 8
-  velocidadePosicao: 2
-  animarRotacao: 1
-  amplitudeRotacao: 2
-  velocidadeRotacao: 1.5
-  animarEscala: 0
-  amplitudeEscala: 0.03
-  velocidadeEscala: 1.8
 --- !u!1 &1127313417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1489,8 +1446,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1877,7 +1834,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5813311968568398804}
   serializedVersion: 8
-  lengthInSec: 5
+  lengthInSec: 1
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -2123,8 +2080,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.4
-      minScalar: 0.05
+      scalar: 0.6
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -2816,8 +2773,8 @@ ParticleSystem:
       countCurve:
         serializedVersion: 2
         minMaxState: 3
-        scalar: 25
-        minScalar: 15
+        scalar: 55
+        minScalar: 55
         maxCurve:
           serializedVersion: 2
           m_Curve:
