@@ -1911,7 +1911,12 @@ MonoBehaviour:
   cameraController: {fileID: 393757227}
   effectService:
     rid: 6004913813358641220
-  blockPrefab2D: {fileID: 1441652025746388113, guid: 4642c7965d68b3946bfdce35e71bd3b0, type: 3}
+  blockPrefab2D:
+  - {fileID: 1441652025746388113, guid: 4642c7965d68b3946bfdce35e71bd3b0, type: 3}
+  - {fileID: 5639306083502474246, guid: f521379d83629be47bd739a4f4bb24fa, type: 3}
+  - {fileID: 7859964705336681561, guid: 3fb57398a3cd9ba4c81df2464567b090, type: 3}
+  - {fileID: 9050005847098428511, guid: b0f05f85efbcd304babe69c4ac5b4bbd, type: 3}
+  - {fileID: 3286809400721494793, guid: b0a7ba70068507349ba0a42d1c4a2020, type: 3}
   tolerance: 0.1
   perfectComboTarget: 5
   references:
