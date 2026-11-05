@@ -11,7 +11,7 @@ public class StackManager2D : MonoBehaviour
     [SerializeReference] private ITowerEffectService effectService = new ParticleEffectService();
 
     [Header("Configurações do Jogo")]
-    [SerializeField] private GameObject blockPrefab2D;
+    [SerializeField] private GameObject[] blockPrefab2D;
     [SerializeField] private float tolerance = 0.1f;
 
     [Header("Mecânica de Combo (Tamanho Inicial / Restauração)")]
@@ -27,9 +27,9 @@ public class StackManager2D : MonoBehaviour
 
     void Start()
     {
-        originalBlockWidth = blockPrefab2D.transform.localScale.x;
+        originalBlockWidth = blockPrefab2D[0].transform.localScale.x;
 
-        lastBlock = Instantiate(blockPrefab2D, Vector3.zero, Quaternion.identity);
+        lastBlock = Instantiate(blockPrefab2D[0], Vector3.zero, Quaternion.identity);
         SpawnNewBlock();
     }
 
@@ -45,7 +45,7 @@ public class StackManager2D : MonoBehaviour
     {
         float newYPosition = lastBlock.transform.position.y + lastBlock.transform.localScale.y;
 
-        currentBlock = Instantiate(blockPrefab2D, new Vector3(0, newYPosition, 0), Quaternion.identity);
+        currentBlock = Instantiate(blockPrefab2D[0], new Vector3(0, newYPosition, 0), Quaternion.identity);
         currentBlock.transform.localScale = lastBlock.transform.localScale;
 
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
@@ -119,7 +119,7 @@ public class StackManager2D : MonoBehaviour
 
     private void CreateFallingPiece(float newWidth, float oldWidth, float direction)
     {
-        GameObject fallingPiece = Instantiate(blockPrefab2D);
+        GameObject fallingPiece = Instantiate(blockPrefab2D[0]);
         Destroy(fallingPiece.GetComponent<BlockMovement2D>());
 
         float fallingWidth = oldWidth - newWidth;
