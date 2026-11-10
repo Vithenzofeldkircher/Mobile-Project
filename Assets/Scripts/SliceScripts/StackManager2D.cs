@@ -23,13 +23,24 @@ public class StackManager2D : MonoBehaviour
     private bool startFromLeft = true;
 
     private int consecutivePerfectHits = 0;
-    private float originalBlockWidth;
+    private int currentPrefabIndex = 0;
+    private float currentOriginalWidth;
 
     void Start()
     {
-        originalBlockWidth = blockPrefab2D[0].transform.localScale.x;
+        if (blockPrefab2D == null || blockPrefab2D.Length == 0)
+        {
+            Debug.LogError("Nenhum prefab de bloco foi atribuído no Inspector!");
+            return;
+        }
 
-        lastBlock = Instantiate(blockPrefab2D[0], Vector3.zero, Quaternion.identity);
+        // Seleciona um índice aleatório inicial usando Random.value
+        currentPrefabIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
+        currentPrefabIndex = Mathf.Clamp(currentPrefabIndex, 0, blockPrefab2D.Length - 1);
+
+        currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
+
+        lastBlock = Instantiate(blockPrefab2D[currentPrefabIndex], Vector3.zero, Quaternion.identity);
         SpawnNewBlock();
     }
 
@@ -43,10 +54,27 @@ public class StackManager2D : MonoBehaviour
 
     private void SpawnNewBlock()
     {
-        float newYPosition = lastBlock.transform.position.y + lastBlock.transform.localScale.y;
+        // 1. Sorteia o próximo prefab
+        currentPrefabIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
+        currentPrefabIndex = Mathf.Clamp(currentPrefabIndex, 0, blockPrefab2D.Length - 1);
 
-        currentBlock = Instantiate(blockPrefab2D[0], new Vector3(0, newYPosition, 0), Quaternion.identity);
-        currentBlock.transform.localScale = lastBlock.transform.localScale;
+        currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
+
+        // Instancia o novo bloco temporariamente para conseguir ler sua altura (localScale.y)
+        currentBlock = Instantiate(blockPrefab2D[currentPrefabIndex], Vector3.zero, Quaternion.identity);
+
+        // Mantém a largura (X) herdada do último bloco, mas preserva a altura (Y) original do prefab sorteado
+        Vector3 newScale = currentBlock.transform.localScale;
+        newScale.x = lastBlock.transform.localScale.x;
+        currentBlock.transform.localScale = newScale;
+
+        // 2. CORREÇÃO DA ALTURA: Topo do último bloco + metade da altura do último + metade da altura do atual
+        float newYPosition = lastBlock.transform.position.y
+                             + (lastBlock.transform.localScale.y / 2f)
+                             + (currentBlock.transform.localScale.y / 2f);
+
+        // Posiciona o bloco mantendo o X inicial correto (de acordo com o movimento)
+        currentBlock.transform.position = new Vector3(0, newYPosition, 0);
 
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
         mover.Initialize(startFromLeft);
@@ -69,7 +97,6 @@ public class StackManager2D : MonoBehaviour
             consecutivePerfectHits++;
             CheckAndApplyComboBonus();
 
-            // Toca o efeito de partículas na posição do acerto perfeito
             effectService?.PlayPlacementEffect(currentBlock.transform.position);
 
             scoreManager.AddPoint();
@@ -96,7 +123,6 @@ public class StackManager2D : MonoBehaviour
 
         CreateFallingPiece(newWidth, currentWidth, direction);
 
-        // Toca o efeito de partículas na posição do bloco encaixado
         effectService?.PlayPlacementEffect(currentBlock.transform.position);
 
         scoreManager.AddPoint();
@@ -108,10 +134,10 @@ public class StackManager2D : MonoBehaviour
         if (consecutivePerfectHits >= perfectComboTarget)
         {
             Vector3 restoredScale = currentBlock.transform.localScale;
-            restoredScale.x = originalBlockWidth;
+            restoredScale.x = currentOriginalWidth; // Restaura para a largura original do prefab atual
             currentBlock.transform.localScale = restoredScale;
 
-            Debug.Log($"<color=green>COMBO PERFEITO ALCANÇADO ({consecutivePerfectHits})!</color> Escala do bloco restaurada para {originalBlockWidth}.");
+            Debug.Log($"<color=green>COMBO PERFEITO ALCANÇADO ({consecutivePerfectHits})!</color> Escala do bloco restaurada para {currentOriginalWidth}.");
 
             consecutivePerfectHits = 0;
         }
@@ -119,7 +145,8 @@ public class StackManager2D : MonoBehaviour
 
     private void CreateFallingPiece(float newWidth, float oldWidth, float direction)
     {
-        GameObject fallingPiece = Instantiate(blockPrefab2D[0]);
+        // Instancia o pedaço que cai usando o mesmo prefab do bloco atual
+        GameObject fallingPiece = Instantiate(blockPrefab2D[currentPrefabIndex]);
         Destroy(fallingPiece.GetComponent<BlockMovement2D>());
 
         float fallingWidth = oldWidth - newWidth;
