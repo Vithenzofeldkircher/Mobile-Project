@@ -8,13 +8,7 @@ public class ShowBestScore : MonoBehaviour
     {
         if (bestScoreText != null)
         {
-            bestScoreText.text = ScoreManager2D.BestScore.ToString();
+            bestScoreText.text = PlayerPrefs.GetInt("BestScore").ToString();
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

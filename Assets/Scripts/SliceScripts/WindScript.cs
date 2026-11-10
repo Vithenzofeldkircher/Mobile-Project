@@ -7,11 +7,11 @@ public class WindScript : MonoBehaviour
     public static int WindDirectionMultiplier { get; private set; } = 1;
 
     private bool isCheckingForWind = false;
-    private float windDuration = 40f;
+    private float windDuration = 20f;
 
     [Header("Configurações do Vento")]
     [Tooltip("Tempo que o jogo espera antes de começar a sortear o primeiro vento (ex: 60 segundos).")]
-    public float initialDelay = 120f; // Tempo de espera no início do jogo
+    public float initialDelay = 40f; // Tempo de espera no início do jogo
 
     [Tooltip("Tempo em segundos entre cada tentativa do Random.Range após o delay inicial.")]
     public float checkInterval = 100f;

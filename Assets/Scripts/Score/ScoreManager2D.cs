@@ -5,8 +5,8 @@ public class ScoreManager2D : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI scoreText;
     private int score = 0;
-    public static int BestScore;
-    void Start()
+    public int BestScore;
+    void Awake()
     {
         BestScore = PlayerPrefs.GetInt("BestScore");
         UpdateUI();
@@ -25,13 +25,11 @@ public class ScoreManager2D : MonoBehaviour
         if (scoreText != null)
         {
             scoreText.text = score.ToString();
-            
-
-            if(score > BestScore)
-            {
-                PlayerPrefs.SetInt("BestScore", score);
-            }
            
+        }
+        if (score > BestScore)
+        {
+            PlayerPrefs.SetInt("BestScore", score);
         }
 
     }
