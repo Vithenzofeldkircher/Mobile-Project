@@ -6,42 +6,40 @@ public class WindScript : MonoBehaviour
     public static bool IsWindActive { get; private set; } = false;
     public static int WindDirectionMultiplier { get; private set; } = 1;
 
-    private bool isCheckingForWind = false;
-    private float windDuration = 20f;
+    private float windDuration = 40f;
 
     [Header("Configurações do Vento")]
-    [Tooltip("Tempo que o jogo espera antes de começar a sortear o primeiro vento (ex: 60 segundos).")]
-    public float initialDelay = 40f; // Tempo de espera no início do jogo
+    [Tooltip("Tempo que o jogo espera antes de começar a sortear o primeiro vento.")]
+    public float initialDelay = 30f;
 
     [Tooltip("Tempo em segundos entre cada tentativa do Random.Range após o delay inicial.")]
-    public float checkInterval = 100f;
+    public float checkInterval = 5f;
+
+    private void Awake()
+    {
+        // Garante que o vento sempre comece desligado ao reiniciar a cena
+        IsWindActive = false;
+        WindDirectionMultiplier = 1;
+    }
 
     void Start()
     {
-        // Começa a rotina de sorteios automáticos
         StartCoroutine(WindCheckRoutine());
     }
 
     IEnumerator WindCheckRoutine()
     {
-        print("Jogo iniciado. Aguardando o tempo inicial para habilitar os ventos...");
-
-        // Espera o tempo inicial antes de permitir qualquer sorteio de vento
+        // Aguarda o tempo inicial antes de permitir qualquer sorteio de vento
+        print("Aguardando o delay inicial de " + initialDelay + " segundos para os ventos...");
         yield return new WaitForSeconds(initialDelay);
-
-        print("Tempo inicial concluído. Começando a monitorar e sortear ventos.");
 
         while (true)
         {
-            // Se o vento já estiver ativo, espera o vento acabar antes de voltar a sortear
-            if (IsWindActive)
-            {
-                yield return null;
-                continue;
-            }
-
             // Espera o intervalo determinado entre cada tentativa
             yield return new WaitForSeconds(checkInterval);
+
+            // Se o vento já estiver ativo por algum motivo, pula esta verificação
+            if (IsWindActive) continue;
 
             // Gera o número aleatório entre 1 e 100
             int randomNumber = Random.Range(1, 100);
@@ -49,11 +47,8 @@ public class WindScript : MonoBehaviour
 
             if (randomNumber < 40)
             {
-                // Vento ativado!
+                // Vento ativado! Inicia a corrotina do vento
                 StartCoroutine(ActivateWindRoutine());
-
-                // Pausa esta rotina de sorteio enquanto o vento estiver rolando
-                yield return new WaitForSeconds(windDuration);
             }
         }
     }
@@ -65,7 +60,7 @@ public class WindScript : MonoBehaviour
         // Escolhe uma direção aleatória para o vento (1 para direita, -1 para esquerda)
         WindDirectionMultiplier = Random.Range(0, 2) == 0 ? 1 : -1;
 
-        print("Vento ativado! Duração: 40 segundos.");
+        print("Vento ativado! Duração: 40 segundos. Direção: " + WindDirectionMultiplier);
 
         // Mantém o vento ativo por 40 segundos
         yield return new WaitForSeconds(windDuration);
@@ -73,6 +68,6 @@ public class WindScript : MonoBehaviour
         // Desativa o vento
         IsWindActive = false;
 
-        print("Vento desativado. Voltando a sortear periodicamente.");
+        print("Vento desativado. Retornando aos sorteios periódicos.");
     }
 }
