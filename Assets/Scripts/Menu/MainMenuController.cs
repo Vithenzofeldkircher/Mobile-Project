@@ -20,6 +20,7 @@ public class MainMenuController : MonoBehaviour
         MainShopMenu.SetActive(true);
     }
 
+
     // E essa função serve para fechar a loja, apenas quando necessario.
     public void CloseShop()
     {
