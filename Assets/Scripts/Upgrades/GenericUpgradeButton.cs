@@ -5,10 +5,8 @@ using UnityEngine.UI;
 public class GenericUpgradeButton : MonoBehaviour
 {
     [Header("Configuração do Upgrade")]
-    [Tooltip("Identificador único deste upgrade (Ex: 'BlockType', 'Tolerance', 'ExtraLife')")]
     [SerializeField] private string upgradeID;
-    [SerializeField] private int baseCost = 10;
-    //[SerializeField] private float costMultiplier = 1.5f; // Opcional: aumenta o custo a cada nível
+    [SerializeField] private int upgradeCost = 10; // Valor fixo do upgrade para cada compra
 
     [Header("Referências da UI")]
     [SerializeField] private TextMeshProUGUI levelText;
@@ -20,34 +18,33 @@ public class GenericUpgradeButton : MonoBehaviour
         UpdateUI();
     }
 
-    // Método universal vinculado ao evento OnClick() do Botão na UI
     public void BuyThisUpgrade()
     {
-        int currentCost = CalculateCurrentCost();
-
-        if (UpgradeManager.TryBuyUpgrade(upgradeID, currentCost))
+        // Tenta realizar a compra usando o custo fixo
+        if (UpgradeManager.TryBuyUpgrade(upgradeID, upgradeCost))
         {
             Debug.Log($"Upgrade '{upgradeID}' comprado com sucesso!");
-            UpdateUI();
-        }
-    }
 
-    private int CalculateCurrentCost()
-    {
-        int currentLevel = UpgradeManager.GetUpgradeLevel(upgradeID);
-        // Exemplo: Cust aumenta proporcionalmente ao nível atual
-        return baseCost;
+            // 1. Atualiza as informações do próprio botão (nível atual)
+            UpdateUI();
+
+            // 2. Localiza e atualiza imediatamente o texto de saldo (BestScore) na tela da loja
+            ShowBestScore[] scoreDisplays = FindObjectsByType<ShowBestScore>(FindObjectsSortMode.None);
+            foreach (var scoreDisplay in scoreDisplays)
+            {
+                scoreDisplay.RefreshBestScoreUI();
+            }
+        }
     }
 
     private void UpdateUI()
     {
         int currentLevel = UpgradeManager.GetUpgradeLevel(upgradeID);
-        int currentCost = CalculateCurrentCost();
 
         if (levelText != null)
             levelText.text = $"Nível: {currentLevel}";
 
         if (costText != null)
-            costText.text = $"Custo: {currentCost}";
+            costText.text = $"Custo: {upgradeCost}"; // Mostra sempre o valor fixo
     }
 }

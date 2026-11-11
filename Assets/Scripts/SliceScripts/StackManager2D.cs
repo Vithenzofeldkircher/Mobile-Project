@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class StackManager2D : MonoBehaviour
 {
@@ -28,22 +29,19 @@ public class StackManager2D : MonoBehaviour
 
     void Start()
     {
+        // Garante que o estado de Double Score comece sempre desativado ao iniciar/reiniciar a partida
+        DoubleScoreManager.ResetRunState();
+
         if (blockPrefab2D == null || blockPrefab2D.Length == 0)
         {
             Debug.LogError("Nenhum prefab de bloco foi atribuído no Inspector!");
             return;
         }
 
-        // 1. Busca o nível comprado do upgrade de blocos usando o ID correspondente
-        int blockUpgradeLevel = UpgradeManager.GetUpgradeLevel("BlockType");
-
-        // 2. Aplica a lógica de mudança de prefab baseada no nível adquirido
+        // Restante do seu código Start()...
+        int upgradeBonus = UpgradeManager.GetUpgradeLevel("BlockType");
         int baseIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
-        currentPrefabIndex = (baseIndex + blockUpgradeLevel) % blockPrefab2D.Length;
-
-        // Exemplo de como você poderia buscar outro upgrade facilmente no futuro:
-        // int toleranceUpgradeLevel = UpgradeManager.GetUpgradeLevel("Tolerance");
-        // float currentTolerance = baseTolerance + (toleranceUpgradeLevel * 0.05f);
+        currentPrefabIndex = (baseIndex + upgradeBonus) % blockPrefab2D.Length;
 
         currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
 
@@ -55,9 +53,18 @@ public class StackManager2D : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
+            // Se o mouse estiver em cima de um elemento de UI interativo (o botão de upgrade),
+            // ele ignora e NÃO solta o bloco na tela.
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return;
+            }
+
+            // Se clicou em qualquer outro lugar da tela, o bloco é posicionado normalmente!
             PlaceBlock();
         }
     }
+
 
     private void SpawnNewBlock()
     {
