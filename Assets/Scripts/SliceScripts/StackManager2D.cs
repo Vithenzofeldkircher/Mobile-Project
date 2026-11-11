@@ -34,9 +34,16 @@ public class StackManager2D : MonoBehaviour
             return;
         }
 
-        // Seleciona um índice aleatório inicial usando Random.value
-        currentPrefabIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
-        currentPrefabIndex = Mathf.Clamp(currentPrefabIndex, 0, blockPrefab2D.Length - 1);
+        // 1. Busca o nível comprado do upgrade de blocos usando o ID correspondente
+        int blockUpgradeLevel = UpgradeManager.GetUpgradeLevel("BlockType");
+
+        // 2. Aplica a lógica de mudança de prefab baseada no nível adquirido
+        int baseIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
+        currentPrefabIndex = (baseIndex + blockUpgradeLevel) % blockPrefab2D.Length;
+
+        // Exemplo de como você poderia buscar outro upgrade facilmente no futuro:
+        // int toleranceUpgradeLevel = UpgradeManager.GetUpgradeLevel("Tolerance");
+        // float currentTolerance = baseTolerance + (toleranceUpgradeLevel * 0.05f);
 
         currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
 
