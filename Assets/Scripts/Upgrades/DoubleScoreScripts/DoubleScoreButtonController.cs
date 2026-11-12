@@ -2,31 +2,30 @@ using UnityEngine;
 
 public class DoubleScoreButtonController : MonoBehaviour
 {
+    [Header("Mensagem de Feedback")]
+    [SerializeField] private string activationMessage = "Double Score Ativado! (2x Pontos)";
+
     private void Start()
     {
-        // Se o jogador não comprou o upgrade na loja, o botão some da cena
-        if (!DoubleScoreManager.IsUnlocked())
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // Se já estiver ativo nesta partida, também some
-        if (DoubleScoreManager.IsActive)
+        if (!DoubleScoreManager.IsUnlocked() || DoubleScoreManager.IsActive)
         {
             Destroy(gameObject);
         }
     }
 
-    // Método vinculado ao evento OnClick() do Botão na UI
     public void ActivateDoubleScore()
     {
         if (DoubleScoreManager.IsUnlocked() && !DoubleScoreManager.IsActive)
         {
             DoubleScoreManager.IsActive = true;
-            Debug.Log("<color=green>Double Score ativado!</color>");
 
-            // Destroi o botão/sprite imediatamente da cena
+            // Dispara a mensagem com Fade na tela
+            if (NotificationFeedback.Instance != null)
+            {
+                NotificationFeedback.Instance.ShowMessage(activationMessage);
+            }
+
+            Debug.Log("<color=green>Double Score ativado com sucesso!</color>");
             Destroy(gameObject);
         }
     }

@@ -29,8 +29,11 @@ public class StackManager2D : MonoBehaviour
 
     void Start()
     {
-        // Garante que o estado de Double Score comece sempre desativado ao iniciar/reiniciar a partida
+        // Reseta e inicializa os estados dos upgrades desta partida
         DoubleScoreManager.ResetRunState();
+        StopWindRunManager.ResetRun();
+        BlockCycleRunManager.ResetRun();
+        BlockCycleRunManager.InitializeRun();
 
         if (blockPrefab2D == null || blockPrefab2D.Length == 0)
         {
@@ -38,7 +41,6 @@ public class StackManager2D : MonoBehaviour
             return;
         }
 
-        // Restante do seu código Start()...
         int upgradeBonus = UpgradeManager.GetUpgradeLevel("BlockType");
         int baseIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
         currentPrefabIndex = (baseIndex + upgradeBonus) % blockPrefab2D.Length;
@@ -53,41 +55,67 @@ public class StackManager2D : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            // Se o mouse estiver em cima de um elemento de UI interativo (o botão de upgrade),
-            // ele ignora e NÃO solta o bloco na tela.
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
                 return;
             }
 
-            // Se clicou em qualquer outro lugar da tela, o bloco é posicionado normalmente!
             PlaceBlock();
         }
     }
 
+    // NOVO MÉTODO: Altera o prefab do bloco atual para o próximo na Array ciclicamente
+    public void TryCycleBlock()
+    {
+        if (!BlockCycleRunManager.HasCharges || currentBlock == null) return;
+
+        // Consome uma carga
+        BlockCycleRunManager.ConsumeCharge();
+
+        // Guarda a posição e largura atuais do bloco em movimento
+        float currentX = currentBlock.transform.position.x;
+        float currentY = currentBlock.transform.position.y;
+        float currentWidth = currentBlock.transform.localScale.x;
+
+        // Destroi o bloco atual em movimento
+        Destroy(currentBlock);
+
+        // Avança para o próximo índice da Array de forma circular
+        currentPrefabIndex = (currentPrefabIndex + 1) % blockPrefab2D.Length;
+        currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
+
+        // Instancia o novo bloco com o novo prefab na mesma posição
+        currentBlock = Instantiate(blockPrefab2D[currentPrefabIndex], new Vector3(currentX, currentY, 0), Quaternion.identity);
+
+        // Mantém a largura (X) que estava sendo usada
+        Vector3 newScale = currentBlock.transform.localScale;
+        newScale.x = currentWidth;
+        currentBlock.transform.localScale = newScale;
+
+        // Reaplica o movimento
+        BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
+        mover.Initialize(startFromLeft);
+
+        Debug.Log($"<color=magenta>Bloco trocado!</color> Novo índice: {currentPrefabIndex}. Cargas restantes: {BlockCycleRunManager.ChargesLeft}");
+    }
 
     private void SpawnNewBlock()
     {
-        // 1. Sorteia o próximo prefab
         currentPrefabIndex = Mathf.FloorToInt(Random.value * blockPrefab2D.Length);
         currentPrefabIndex = Mathf.Clamp(currentPrefabIndex, 0, blockPrefab2D.Length - 1);
 
         currentOriginalWidth = blockPrefab2D[currentPrefabIndex].transform.localScale.x;
 
-        // Instancia o novo bloco temporariamente para conseguir ler sua altura (localScale.y)
         currentBlock = Instantiate(blockPrefab2D[currentPrefabIndex], Vector3.zero, Quaternion.identity);
 
-        // Mantém a largura (X) herdada do último bloco, mas preserva a altura (Y) original do prefab sorteado
         Vector3 newScale = currentBlock.transform.localScale;
         newScale.x = lastBlock.transform.localScale.x;
         currentBlock.transform.localScale = newScale;
 
-        // 2. CORREÇÃO DA ALTURA: Topo do último bloco + metade da altura do último + metade da altura do atual
         float newYPosition = lastBlock.transform.position.y
-                             + (lastBlock.transform.localScale.y / 2f)
-                             + (currentBlock.transform.localScale.y / 2f);
+                           + (lastBlock.transform.localScale.y / 2f)
+                           + (currentBlock.transform.localScale.y / 2f);
 
-        // Posiciona o bloco mantendo o X inicial correto (de acordo com o movimento)
         currentBlock.transform.position = new Vector3(0, newYPosition, 0);
 
         BlockMovement2D mover = currentBlock.AddComponent<BlockMovement2D>();
@@ -148,10 +176,8 @@ public class StackManager2D : MonoBehaviour
         if (consecutivePerfectHits >= perfectComboTarget)
         {
             Vector3 restoredScale = currentBlock.transform.localScale;
-            restoredScale.x = currentOriginalWidth; // Restaura para a largura original do prefab atual
+            restoredScale.x = currentOriginalWidth;
             currentBlock.transform.localScale = restoredScale;
-
-            Debug.Log($"<color=green>COMBO PERFEITO ALCANÇADO ({consecutivePerfectHits})!</color> Escala do bloco restaurada para {currentOriginalWidth}.");
 
             consecutivePerfectHits = 0;
         }
@@ -159,7 +185,6 @@ public class StackManager2D : MonoBehaviour
 
     private void CreateFallingPiece(float newWidth, float oldWidth, float direction)
     {
-        // Instancia o pedaço que cai usando o mesmo prefab do bloco atual
         GameObject fallingPiece = Instantiate(blockPrefab2D[currentPrefabIndex]);
         Destroy(fallingPiece.GetComponent<BlockMovement2D>());
 
@@ -204,7 +229,5 @@ public class StackManager2D : MonoBehaviour
             float finalTowerHeight = lastBlock.transform.position.y;
             cameraController.ZoomOutToOverview(finalTowerHeight);
         }
-
-        Debug.Log("GAME OVER! Pontos: " + scoreManager.GetScore());
     }
 }
