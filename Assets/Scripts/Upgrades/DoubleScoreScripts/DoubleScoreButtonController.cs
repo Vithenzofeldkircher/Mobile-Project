@@ -1,32 +1,61 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DoubleScoreButtonController : MonoBehaviour
 {
-    [Header("Mensagem de Feedback")]
-    [SerializeField] private string activationMessage = "Double Score Ativado! (2x Pontos)";
+    [Header("Mensagens de Feedback")]
+    [SerializeField] private string successMessage = "Double Score Ativado! (2x Pontos)";
+    [SerializeField] private string notUnlockedMessage = "Upgrade não desbloqueado na loja!";
+    [SerializeField] private string alreadyActiveMessage = "Double Score já está ativo!";
+
+    [Header("Referências Visuais")]
+    [SerializeField] private Button buttonComponent;
 
     private void Start()
     {
-        if (!DoubleScoreManager.IsUnlocked() || DoubleScoreManager.IsActive)
+        if (buttonComponent == null) buttonComponent = GetComponent<Button>();
+        UpdateVisualState();
+    }
+
+    private void Update()
+    {
+        UpdateVisualState();
+    }
+
+    private void UpdateVisualState()
+    {
+        if (buttonComponent != null)
         {
-            Destroy(gameObject);
+            // O botão só fica interativo se foi desbloqueado na loja E ainda não foi ativado nesta partida
+            bool canUse = DoubleScoreManager.IsUnlocked() && !DoubleScoreManager.IsActive;
+            buttonComponent.interactable = canUse;
         }
     }
 
+    // Método vinculado ao evento OnClick() do Botão na UI
     public void ActivateDoubleScore()
     {
-        if (DoubleScoreManager.IsUnlocked() && !DoubleScoreManager.IsActive)
+        if (!DoubleScoreManager.IsUnlocked())
         {
-            DoubleScoreManager.IsActive = true;
-
-            // Dispara a mensagem com Fade na tela
             if (NotificationFeedback.Instance != null)
-            {
-                NotificationFeedback.Instance.ShowMessage(activationMessage);
-            }
-
-            Debug.Log("<color=green>Double Score ativado com sucesso!</color>");
-            Destroy(gameObject);
+                NotificationFeedback.Instance.ShowMessage(notUnlockedMessage);
+            return;
         }
+
+        if (DoubleScoreManager.IsActive)
+        {
+            if (NotificationFeedback.Instance != null)
+                NotificationFeedback.Instance.ShowMessage(alreadyActiveMessage);
+            return;
+        }
+
+        DoubleScoreManager.IsActive = true;
+
+        if (NotificationFeedback.Instance != null)
+        {
+            NotificationFeedback.Instance.ShowMessage(successMessage);
+        }
+
+        UpdateVisualState();
     }
 }

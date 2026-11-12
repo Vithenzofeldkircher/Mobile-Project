@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BlockCycleButtonController : MonoBehaviour
 {
@@ -6,20 +7,38 @@ public class BlockCycleButtonController : MonoBehaviour
     [SerializeField] private string successMessage = "Bloco Trocado!";
     [SerializeField] private string noChargesMessage = "Sem cargas de Troca de Bloco!";
 
+    [Header("Referências Visuais")]
+    [SerializeField] private Button buttonComponent;
+
     private void Start()
     {
-        if (!BlockCycleRunManager.HasCharges)
+        BlockCycleRunManager.InitializeRun();
+        if (buttonComponent == null) buttonComponent = GetComponent<Button>();
+        UpdateVisualState();
+    }
+
+    private void Update()
+    {
+        UpdateVisualState();
+    }
+
+    private void UpdateVisualState()
+    {
+        if (buttonComponent != null)
         {
-            Destroy(gameObject);
+            buttonComponent.interactable = BlockCycleRunManager.HasCharges;
         }
     }
 
+    // Método vinculado ao evento OnClick() do Botão na UI
     public void OnClickCycleBlock()
     {
         if (!BlockCycleRunManager.HasCharges)
         {
             if (NotificationFeedback.Instance != null)
+            {
                 NotificationFeedback.Instance.ShowMessage(noChargesMessage);
+            }
             return;
         }
 
@@ -29,15 +48,11 @@ public class BlockCycleButtonController : MonoBehaviour
             stackManager.TryCycleBlock();
         }
 
-        // Exibe a mensagem de sucesso com Fade
         if (NotificationFeedback.Instance != null)
         {
             NotificationFeedback.Instance.ShowMessage(successMessage);
         }
 
-        if (!BlockCycleRunManager.HasCharges)
-        {
-            Destroy(gameObject);
-        }
+        UpdateVisualState();
     }
 }

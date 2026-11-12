@@ -29,10 +29,13 @@ public class StackManager2D : MonoBehaviour
 
     void Start()
     {
-        // Reseta e inicializa os estados dos upgrades desta partida
+        // Reseta os estados da partida anterior
         DoubleScoreManager.ResetRunState();
         StopWindRunManager.ResetRun();
         BlockCycleRunManager.ResetRun();
+
+        // Recarrega as cargas com base nos upgrades comprados na loja
+        StopWindRunManager.InitializeRun();
         BlockCycleRunManager.InitializeRun();
 
         if (blockPrefab2D == null || blockPrefab2D.Length == 0)
